@@ -13,3 +13,17 @@ def students_page(request: Request):
         'students/list.html',
         {'request': request, 'students': students}
     )
+
+@router.get('/students')
+def list_students():
+    students = get_all_students
+    return [dict (s) for s in students]
+
+#app/routes/students.py
+from fastapi import Form
+from fastapi.responses import RedirectResponse
+
+@router.post('/students/add')
+def add_student(name: str = Form(...), class_name: str = Form(...)):
+    create_students(name, class_name)
+    return RedirectResponse('/students', status_code=303)
