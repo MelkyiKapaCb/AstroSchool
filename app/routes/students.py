@@ -16,5 +16,5 @@ def students_page(request: Request):
 
 @router.get('/students')
 def list_students():
-    studets = get_all_students
+    students = get_all_students
     return [dict (s) for s in students]
