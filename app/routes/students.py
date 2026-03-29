@@ -13,3 +13,8 @@ def students_page(request: Request):
         'students/list.html',
         {'request': request, 'students': students}
     )
+
+@router.get('/students')
+def list_students():
+    students = get_all_students
+    return [dict (s) for s in students]
