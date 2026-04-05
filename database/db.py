@@ -15,14 +15,14 @@ def init_db():
                          name   TEXT    NOT NULL,
                          coins  INTEGER DEFAULT 0,
                          class TEXT,
-                         data TEXT,
+                         data TEXT
                          );
         CREATE TABLE IF NOT EXISTS transactions (
                          id         INTEGER PRIMARY KEY AUTOINCREMENT,
                          student_id INTEGER NOT NULL,
                          amount     INTEGER NOT NULL,
                          reason     TEXT,
-                         created_at DATETIME DEFAULT CURRECT_TIMESTAMP
+                         created_at DATETIME DEFAULT CURRECT_TIMESTAMP,
                          FOREIGN KEY (student_id) REFERENCES students(id)
                          );
         CREATE TABLE IF NOT EXISTS teachers (
