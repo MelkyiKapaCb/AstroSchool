@@ -1,0 +1,18 @@
+{# templates/students/list.html #}
+{% extends 'base.html' %}
+{% block content %}
+
+{# Заголовок страницы #}
+<section class="page-header">
+    <h1>Студенты</h1>
+    <a href="/students/add" class="btn">+ Добавить</a>
+</section>
+
+{# Список карточек - один компонент #}
+<section class="student-grid">
+    {% for student in students %}
+        {% include "students/card.html" %}
+    {% endfor %}
+</section>
+
+{% endblock %}
