@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 from database.db import create_student, get_all_students
 
-router = APIRouter
+router = APIRouter()
 
 templates = Jinja2Templates(directory='templates')
 
