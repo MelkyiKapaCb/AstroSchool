@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Вход — АстроШкола{% endblock %}
+{% block content %}
+<section class="narrow">
+    <h1>Вход</h1>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+    <form class="stack-form" method="post" action="/login">
+        <label>Email
+            <input type="email" name="email" required autocomplete="username">
+        </label>
+        <label>Пароль
+            <input type="password" name="password" required autocomplete="current-password">
+        </label>
+        <button class="btn btn-primary" type="submit">Войти</button>
+    </form>
+    <p class="muted"><a href="/register">Нет аккаунта? Регистрация</a></p>
+    <p class="hint muted">Тестовый админ: <code>admin@local</code> / <code>admin</code></p>
+</section>
+{% endblock %}

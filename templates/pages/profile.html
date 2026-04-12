@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Профиль — АстроШкола{% endblock %}
+{% block content %}
+<section class="page-header">
+    <h1>Профиль</h1>
+</section>
+<div class="card profile-card">
+    <p><strong>Имя:</strong> {{ current_user.display_name }}</p>
+    <p><strong>Email:</strong> {{ current_user.email }}</p>
+    {% if student %}
+        <p><strong>Монеты:</strong> {{ student.coins }}</p>
+        <p><strong>Класс (поле):</strong> {{ student['class'] or '—' }}</p>
+        <a class="btn btn-ghost" href="/students/{{ student.id }}">Карточка ученика</a>
+    {% else %}
+        <p class="muted">К учётной записи не привязан ученик.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,18 +1,25 @@
-{# templates/students/list.html #}
 {% extends 'base.html' %}
+{% block title %}Ученики — АстроШкола{% endblock %}
 {% block content %}
 
-{# Заголовок страницы #}
 <section class="page-header">
-    <h1>Студенты</h1>
-    <a href="/students/add" class="btn">+ Добавить</a>
+    <h1>Ученики</h1>
+    {% if is_admin %}
+        <a href="/students/add" class="btn btn-primary">+ Добавить</a>
+    {% endif %}
 </section>
 
-{# Список карточек - один компонент #}
+{% if is_admin %}
+<section class="admin-panel card muted small">
+    <p>Как администратор вы можете добавлять учеников и включать их в группы на странице группы.</p>
+</section>
+{% endif %}
+
 <section class="student-grid">
     {% for student in students %}
         {% include "students/card.html" %}
+    {% else %}
+        <p class="muted">Список пуст.</p>
     {% endfor %}
 </section>
-
 {% endblock %}

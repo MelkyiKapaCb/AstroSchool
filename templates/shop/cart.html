@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Корзина — АстроШкола{% endblock %}
+{% block content %}
+<section class="page-header">
+    <h1>Корзина</h1>
+</section>
+{% if checkout_ok %}
+    <p class="success">Заказ оформлен, монеты списаны.</p>
+{% endif %}
+{% if error %}
+    <p class="error">{{ error }}</p>
+{% endif %}
+
+{% if lines %}
+    <ul class="cart-list">
+        {% for line in lines %}
+            <li class="cart-row card">
+                <div>
+                    <strong><a href="/shop/{{ line.item.id }}">{{ line.item.name }}</a></strong>
+                    <p class="muted small">{{ line.item.price }} × {{ line.qty }} = {{ line.line_total }}</p>
+                </div>
+                <form method="post" action="/cart/update" class="inline-form">
+                    <input type="hidden" name="item_id" value="{{ line.item.id }}">
+                    <input type="number" name="qty" value="{{ line.qty }}" min="0" max="999">
+                    <button type="submit" class="btn btn-ghost btn-sm">Обновить</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <p class="cart-total"><strong>Итого:</strong> {{ cart_total }} монет</p>
+    {% if current_user %}
+        <form method="post" action="/cart/checkout">
+            <button class="btn btn-primary" type="submit">Оформить (списать монеты)</button>
+        </form>
+    {% else %}
+        <p class="muted"><a href="/login">Войдите</a>, чтобы оплатить заказ монетами с профиля.</p>
+    {% endif %}
+{% else %}
+    <p class="muted">Корзина пуста. <a href="/shop">Перейти в магазин</a></p>
+{% endif %}
+{% endblock %}

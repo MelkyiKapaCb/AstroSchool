@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}{{ group.name }} — Группы{% endblock %}
+{% block content %}
+<section class="page-header">
+    <a class="back-link" href="/groups">← Все группы</a>
+    <h1>{{ group.name }}</h1>
+    {% if group.description %}
+        <p class="muted">{{ group.description }}</p>
+    {% endif %}
+</section>
+
+{% if is_admin and available_students %}
+<section class="admin-panel card">
+    <h2>Добавить ученика в группу</h2>
+    <form class="inline-form" method="post" action="/groups/{{ group.id }}/add-student">
+        <select name="student_id" required>
+            {% for s in available_students %}
+                <option value="{{ s.id }}">{{ s.name }} (id {{ s.id }})</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-primary" type="submit">Добавить</button>
+    </form>
+</section>
+{% elif is_admin %}
+    <p class="muted card">Все ученики уже в этой группе (или список учеников пуст).</p>
+{% endif %}
+
+<section>
+    <h2>Состав</h2>
+    <ul class="member-list">
+        {% for s in members %}
+            <li class="card member-row">
+                <a href="/students/{{ s.id }}">{{ s.name }}</a>
+                <span class="muted">{{ s.coins }} 🪙</span>
+                {% if is_admin %}
+                    <form class="inline-form" method="post" action="/groups/{{ group.id }}/remove-student" onsubmit="return confirm('Убрать из группы?');">
+                        <input type="hidden" name="student_id" value="{{ s.id }}">
+                        <button type="submit" class="link-btn danger">Убрать</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% else %}
+            <li class="muted">В группе пока никого нет.</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}

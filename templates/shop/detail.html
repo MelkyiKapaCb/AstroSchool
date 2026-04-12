@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{{ item.name }} — Магазин{% endblock %}
+{% block content %}
+<article class="product-page card">
+    <a class="back-link" href="/shop">← В каталог</a>
+    <h1>{{ item.name }}</h1>
+    <p class="price big">{{ item.price }} монет</p>
+    {% if item.description %}
+        <div class="product-desc">{{ item.description }}</div>
+    {% endif %}
+    <form class="stack-form row-form" method="post" action="/cart/add">
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <label>Количество
+            <input type="number" name="qty" value="1" min="1" max="99">
+        </label>
+        <button class="btn btn-primary" type="submit">В корзину</button>
+    </form>
+</article>
+{% endblock %}

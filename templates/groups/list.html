@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Группы — АстроШкола{% endblock %}
+{% block content %}
+<section class="page-header">
+    <h1>Группы</h1>
+</section>
+
+{% if is_admin %}
+<section class="admin-panel card">
+    <h2>Новая группа</h2>
+    <form class="stack-form" method="post" action="/groups/add">
+        <label>Название
+            <input type="text" name="name" required maxlength="120">
+        </label>
+        <label>Описание
+            <textarea name="description" rows="2" maxlength="500"></textarea>
+        </label>
+        <button class="btn btn-primary" type="submit">Создать группу</button>
+    </form>
+</section>
+{% endif %}
+
+<ul class="group-list">
+    {% for g in groups %}
+        <li class="card group-row">
+            <a href="/groups/{{ g.id }}"><h2>{{ g.name }}</h2></a>
+            {% if g.description %}
+                <p class="muted small">{{ g.description }}</p>
+            {% endif %}
+        </li>
+    {% else %}
+        <p class="muted">Групп пока нет{% if is_admin %} — создайте первую{% endif %}.</p>
+    {% endfor %}
+</ul>
+{% endblock %}

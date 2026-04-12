@@ -1,7 +1,13 @@
-{# templates/students/card.html - переиспользуемый компонент #}
-<div class="student-card">
-    <h2>{{ student.name }}</h2>
-    <span class="coins">{{ student.coins }} монет</span>
-    <span class="class">{{ student.class }}</span>
-    <a href="/students/{{ students.id }}">Подробнее</a>
+{% extends 'base.html' %}
+{% block title %}{{ student.name }} — Ученик{% endblock %}
+{% block content %}
+<section class="page-header">
+    <a class="back-link" href="/students">← Все ученики</a>
+    <h1>{{ student.name }}</h1>
+</section>
+<div class="card profile-card">
+    <p><strong>Монеты:</strong> {{ student.coins }}</p>
+    <p><strong>Класс (поле):</strong> {{ student['class'] or '—' }}</p>
+    <p class="muted small">id: {{ student.id }}</p>
 </div>
+{% endblock %}

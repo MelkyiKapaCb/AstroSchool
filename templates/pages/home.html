@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Главная — АстроШкола{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>Добро пожаловать</h1>
+    <p class="lead">Учёт учеников, группы, магазин за монеты. Войдите или зарегистрируйтесь, чтобы открыть профиль и корзину.</p>
+    <div class="hero-actions">
+        {% if not current_user %}
+            <a class="btn btn-primary" href="/register">Создать аккаунт</a>
+            <a class="btn btn-ghost" href="/login">Войти</a>
+        {% else %}
+            <a class="btn btn-primary" href="/shop">В магазин</a>
+            <a class="btn btn-ghost" href="/profile">Мой профиль</a>
+        {% endif %}
+    </div>
+</section>
+<section class="grid-cards">
+    <a class="tile" href="/students"><h2>Ученики</h2><p>Список и карточки</p></a>
+    <a class="tile" href="/groups"><h2>Группы</h2><p>Состав по группам</p></a>
+    <a class="tile" href="/shop"><h2>Магазин</h2><p>Товары за монеты</p></a>
+</section>
+{% endblock %}

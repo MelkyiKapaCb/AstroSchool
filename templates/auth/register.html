@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Регистрация — АстроШкола{% endblock %}
+{% block content %}
+<section class="narrow">
+    <h1>Регистрация</h1>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+    <form class="stack-form" method="post" action="/register">
+        <label>Отображаемое имя
+            <input type="text" name="display_name" required maxlength="120">
+        </label>
+        <label>Email
+            <input type="email" name="email" required autocomplete="email">
+        </label>
+        <label>Пароль
+            <input type="password" name="password" required minlength="4" autocomplete="new-password">
+        </label>
+        <button class="btn btn-primary" type="submit">Зарегистрироваться</button>
+    </form>
+    <p class="muted">После регистрации создаётся ученик с 100 монетами.</p>
+</section>
+{% endblock %}
