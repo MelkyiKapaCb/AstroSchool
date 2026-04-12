@@ -1,0 +1,7 @@
+{# templates/students/card.html #}
+<div class="student-card">
+    <h2>{{ student['name'] }}</h2>
+    <span class="coins">{{ student['coins'] }} монет</span>
+    <span class="class">{{ student['class'] }}</span>
+    <a href="/students/{{ student['id'] }}">Подробнее</a>
+</div>
