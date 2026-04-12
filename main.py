@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from database.db import init_db
 from app.routes.students import router as students_router
 from fastapi.responses import RedirectResponse #new
-
+# uvicorn main:app --reload = start program
 app = FastAPI()
 app.include_router(students_router)
 
