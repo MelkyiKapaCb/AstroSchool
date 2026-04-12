@@ -1,0 +1,23 @@
+<!-- {% extends "base.html" %}
+
+{% block content %}
+<h2>Добавить студента</h2>
+<form method="post" action="/students/add">
+    <label>Имя: <input type="text" name="name" required></label><br><br>
+    <label>Класс: <input type="text" name="class_name" required></label><br><br>
+    <button type="submit">Сохранить</button>
+</form>
+<br>
+<a href="/students">← Назад к списку</a>
+{% endblock %} -->
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Добавить ученика</h2>
+<form method="post" action="/students/add">
+    <label>Имя: <input type="text" name="name" required></label><br><br>
+    <label>Класс: <input type="text" name="class_name" required></label><br><br>
+    <button type="submit">Сохранить</button>
+</form>
+<p><a href="/students">Назад к списку</a></p>
+{% endblock %}
