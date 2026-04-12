@@ -1,4 +1,4 @@
-from db import init_db, create_student, get_all_students, delete_student, create_teacher, get_all_teachers, delete_teachers, get_all_item, create_item, delete_item, DATATIME
+from database.db import init_db, create_student, get_all_students, delete_student, create_teacher, get_all_teachers, delete_teachers, get_all_item, create_item, delete_item, DATATIME
 
 init_db()
 # create_student('Артём', '10A')

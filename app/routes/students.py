@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 from database.db import create_student, get_all_students
+from fastapi import Form
+from fastapi.responses import RedirectResponse
 
-router = APIRouter
+router = APIRouter()
 
 templates = Jinja2Templates(directory='templates')
 
@@ -14,14 +16,12 @@ def students_page(request: Request):
         {'request': request, 'students': students}
     )
 
-@router.get('/students')
+@router.get('/api/students')
 def list_students():
-    students = get_all_students
+    students = get_all_students()
     return [dict (s) for s in students]
 
 #app/routes/students.py
-from fastapi import Form
-from fastapi.responses import RedirectResponse
 
 @router.post('/students/add')
 def add_student(name: str = Form(...), class_name: str = Form(...)):

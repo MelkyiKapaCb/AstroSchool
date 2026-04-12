@@ -9,8 +9,7 @@ app.include_router(students_router)
 
 @app.on_event('startup')
 def startup():
-    init_db
+    init_db()  # синхронная функция, await не нужен
 
 templates = Jinja2Templates(directory='templates')
 app.mount('/static', StaticFiles(directory='static'), name='static')
-
