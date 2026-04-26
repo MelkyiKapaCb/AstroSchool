@@ -15,7 +15,9 @@ def init_db():
             name TEXT NOT NULL,
             coins INTEGER DEFAULT 0,
             class TEXT,
-            data TEXT
+            data TEXT,
+            login TEXT,
+            password TEXT
         );
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,6 +37,11 @@ def init_db():
             name TEXT NOT NULL
         );
     ''')
+    cols = [row[1] for row in conn.execute('PRAGMA table_info(students)').fetchall()]
+    if 'login' not in cols:
+        conn.execute('ALTER TABLE students ADD COLUMN login TEXT')
+    if 'password' not in cols:
+        conn.execute('ALTER TABLE students ADD COLUMN password TEXT')
     conn.commit()
     conn.close()
 
@@ -120,8 +127,47 @@ def get_student_by_id(student_id: int):
     conn.close()
     return res
 
-def update_student(student_id: int, name: str, class_name: str):
+def update_student(student_id: int, name: str, class_name: str, coins: int = 0, data: str = ""):
     conn = get_connection()
-    conn.execute('UPDATE students SET name = ?, class = ? WHERE id = ?', (name, class_name, student_id))
+    conn.execute(
+        'UPDATE students SET name = ?, class = ?, coins = ?, data = ? WHERE id = ?',
+        (name, class_name, coins, data, student_id)
+    )
+    conn.commit()
+    conn.close()
+
+def create_login(login: str, password: str):
+    conn = get_connection()
+    conn.execute('INSERT INTO login (login, password) VALUES (?, ?)', (login, password))
+    conn.commit()
+    conn.close()
+
+def create_password(password: str):
+    conn = get_connection()
+    conn.execute('INSERT INTO password (password) VALUES (?)', (password,))
+    conn.commit()
+    conn.close()
+
+def delete_login(login: str):
+    conn = get_connection()
+    conn.execute('DELETE FROM login WHERE login = ?', (login,))
+    conn.commit()
+    conn.close()
+
+def delete_password(password: str):
+    conn = get_connection()
+    conn.execute('DELETE FROM password WHERE password = ?', (password,))
+    conn.commit()
+    conn.close()
+
+def update_login(login: str, password: str):
+    conn = get_connection()
+    conn.execute('UPDATE students SET login = ?, password = ? WHERE id = ?', (login, password, student_id))
+    conn.commit()
+    conn.close()
+
+def update_password(password: str):
+    conn = get_connection()
+    conn.execute('UPDATE students SET password = ? WHERE id = ?', (password, student_id))
     conn.commit()
     conn.close()
