@@ -1,31 +1,3 @@
-<!-- {% extends "base.html" %}
-
-{% block content %}
-<h1>Список студентов</h1>
-<a href="/students/add">➕ Добавить студента</a>
-
-<table border="1" cellpadding="8" style="margin-top:20px; border-collapse: collapse;">
-    <thead>
-        <tr><th>ID</th><th>Имя</th><th>Класс</th><th>Действия</th></tr>
-    </thead>
-    <tbody>
-        {% for student in students %}
-        <tr>
-            <td>{{ student.id }}</td>
-            <td>{{ student.name }}</td>
-            <td>{{ student.class_name }}</td>
-            <td>
-                <a href="/students/edit/{{ student.id }}">✏️ Редактировать</a>
-                <form method="post" action="/students/delete/{{ student.id }}" style="display:inline;">
-                    <button type="submit" onclick="return confirm('Удалить студента?')">🗑️ Удалить</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endblock %} -->
-
 {% extends "base.html" %}
 
 {% block content %}
@@ -34,18 +6,21 @@
 
 <table border="1" cellpadding="8" style="margin-top:20px; border-collapse: collapse;">
     <thead>
-        <tr><th>ID</th><th>Имя</th><th>Класс</th><th>Действия</th></tr>
+        <tr><th>ID</th><th>Имя</th><th>Класс</th><th>💰</th><th>Data</th><th>Действия</th></tr>
     </thead>
     <tbody>
         {% for student in students %}
         <tr>
             <td>{{ student.id }}</td>
             <td>{{ student.name }}</td>
-            <td>{{ student.class }}</td>
+            <!-- ✅ Доступ к 'class' через кавычки, т.к. это ключ словаря -->
+            <td>{{ student['class'] }}</td>
+            <td>{{ student.coins }}</td>
+            <td>{{ student.data }}</td>
             <td>
-                <a href="/students/edit/{{ student.id }}">✏️ Редактировать</a>
+                <a href="/students/edit/{{ student.id }}">✏️</a>
                 <form method="post" action="/students/delete/{{ student.id }}" style="display:inline;">
-                    <button type="submit" onclick="return confirm('Удалить студента?')">🗑️ Удалить</button>
+                    <button type="submit" onclick="return confirm('Удалить?')">🗑️</button>
                 </form>
             </td>
         </tr>
