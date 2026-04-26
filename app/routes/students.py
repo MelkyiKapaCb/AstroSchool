@@ -10,14 +10,10 @@ templates = Jinja2Templates(directory='templates')
 def students_page(request: Request):
     students = get_all_students()
     return templates.TemplateResponse(
+        request,
         'students/list.html',
-        {'request': request, 'students': students}
+        {'students': students},
     )
-
-@router.get('/students')
-def list_students():
-    students = get_all_students
-    return [dict (s) for s in students]
 
 #app/routes/students.py
 from fastapi import Form
