@@ -22,7 +22,7 @@ def init_db():
                          student_id INTEGER NOT NULL,
                          amount     INTEGER NOT NULL,
                          reason     TEXT,
-                         created_at DATETIME DEFAULT CURRECT_TIMESTAMP,
+                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                          FOREIGN KEY (student_id) REFERENCES students(id)
                          );
         CREATE TABLE IF NOT EXISTS teachers (
@@ -73,7 +73,7 @@ def add_coins(student_id, amount):
 def delete_student(student_id):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('DELETE FROM  students WHERE id = ?', (student_id,))
+    cursor.execute('DELETE FROM items WHERE id = ?', (item_id,))
     conn.commit()
     conn.close()
 
