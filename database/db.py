@@ -125,3 +125,14 @@ def update_student(student_id: int, name: str, class_name: str):
     conn.execute('UPDATE students SET name = ?, class = ? WHERE id = ?', (name, class_name, student_id))
     conn.commit()
     conn.close()
+
+# database/db.py (добавить в конец)
+def get_transactions_by_student(student_id: int, limit: int = 50):
+    """Возвращает список последних транзакций студента."""
+    conn = get_connection()
+    rows = conn.execute(
+        'SELECT * FROM transactions WHERE student_id = ? ORDER BY created_at DESC LIMIT ?',
+        (student_id, limit)
+    ).fetchall()
+    conn.close()
+    return [dict(row) for row in rows]

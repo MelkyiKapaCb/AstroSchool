@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="background: #f0f7ff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <!-- Аватар-заглушка -->
+            <div style="width: 100px; height: 100px; background: #8B5CF6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px;">
+                👤
+            </div>
+            <div>
+                <h1>{{ student.name }}</h1>
+                <p><strong>Класс:</strong> {{ student.class or 'не указан' }}</p>
+                <p><strong>💰 Монет:</strong> <span style="font-size: 1.5em; color: #f59e0b;">{{ student.coins }}</span></p>
+                <a href="/shop" style="display: inline-block; background: #10b981; color: white; padding: 8px 16px; text-decoration: none; border-radius: 8px;">🛒 Магазин</a>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 30px;">📜 История операций</h2>
+    {% if student.transactions %}
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <thead>
+            <tr><th style="border-bottom: 2px solid #ddd; padding: 8px;">Дата</th><th style="border-bottom: 2px solid #ddd; padding: 8px;">Сумма</th><th style="border-bottom: 2px solid #ddd; padding: 8px;">Причина</th></tr>
+        </thead>
+        <tbody>
+            {% for tx in student.transactions %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 8px;">{{ tx.created_at }}</td>
+                <td style="padding: 8px;">
+                    {{ '+' if tx.amount > 0 }}{{ tx.amount }}
+                </td>
+                <td style="padding: 8px;">{{ tx.reason or '—' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Нет операций.</p>
+    {% endif %}
+
+    <div style="margin-top: 30px;">
+        <a href="/students">← Назад к списку</a>
+    </div>
+</div>
+{% endblock %}
