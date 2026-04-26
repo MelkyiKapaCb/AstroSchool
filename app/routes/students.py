@@ -13,11 +13,11 @@ def _rows_to_dicts(rows):
 @router.get('/students')
 def students_page(request: Request):
     students = _rows_to_dicts(get_all_students())  # ✅ Конвертация
-    return templates.TemplateResponse('students/list.html', {'request': request, 'students': students})
+    return templates.TemplateResponse(request, 'students/list.html', {'students': students})
 
 @router.get('/students/add')
 def add_student_form(request: Request):
-    return templates.TemplateResponse('students/add.html', {'request': request})
+    return templates.TemplateResponse(request, 'students/add.html')
 
 @router.post('/students/add')
 async def add_student(
@@ -36,9 +36,4 @@ async def add_student(
     conn.commit()
     conn.close()
     return RedirectResponse('/students', status_code=303)
-
-
-
-
-
 
