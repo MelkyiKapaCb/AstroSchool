@@ -23,9 +23,9 @@ def main():
         print("5. Добавить учителя")
         print("6. Показать учителей")
         print("7. Удалить учителя")
-        print("8. Добавить предмет")
-        print("9. Показать предметы")
-        print("10. Удалить предмет")
+        print("8. Добавить товар (магазин)")
+        print("9. Показать товары")
+        print("10. Удалить товар")
         print("off - Выход")
         
         choice = input("\n🔹 Команда: ").strip().lower()
@@ -78,12 +78,15 @@ def main():
             print("✅ Учитель удалён.")
             
         elif choice == "8":
-            create_item(input("Название предмета: ").strip())
-            print("✅ Предмет добавлен.")
+            name_i = input("Название товара: ").strip()
+            price_s = input("Цена (число, можно пусто = 0): ").strip()
+            price_i = int(price_s) if price_s else 0
+            create_item(name_i, price_i)
+            print("✅ Товар добавлен.")
             
         elif choice == "9":
             for i in get_all_item():
-                print(f"ID:{i['id']} | {i['name']}")
+                print(f"ID:{i['id']} | {i['name']} | цена:{i['price']}")
                 
         elif choice == "10":
             delete_item(safe_int("ID предмета: "))

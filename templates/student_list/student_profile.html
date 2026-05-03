@@ -10,7 +10,7 @@
             </div>
             <div>
                 <h1>{{ student.name }}</h1>
-                <p><strong>Класс:</strong> {{ student.class or 'не указан' }}</p>
+                <p><strong>Класс:</strong> {{ student['class'] or 'не указан' }}</p>
                 <p><strong>💰 Монет:</strong> <span style="font-size: 1.5em; color: #f59e0b;">{{ student.coins }}</span></p>
                 <a href="/shop" style="display: inline-block; background: #10b981; color: white; padding: 8px 16px; text-decoration: none; border-radius: 8px;">🛒 Магазин</a>
             </div>

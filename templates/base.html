@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,7 @@
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
         a, button { margin-right: 10px; }
+        button:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -18,30 +19,4 @@
     <hr>
     <a href="/students">На главную</a>
 </body>
-</html> -->
-
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-        <title>
-            Школьная система
-        </title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        a, button { margin-right: 10px; }
-        button:hover { opacity: 0.8; }
-    </style>
-</head>
-    <body>
-        <h1>📚 Школьная система</h1>
-            <hr>
-                {% block content %}{% endblock %}
-            <hr>
-        <a href="/students">На главную</a>
-    </body>
 </html>
-
