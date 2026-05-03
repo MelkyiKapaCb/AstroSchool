@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- <section class="page-header">
+    <h1>Добавить товар</h1>
+    <a href="/shop" class="btn">← Назад в магазин</a>
+</section>
+
+<section class="add-form">
+    <form action="/shop/add" method="post">
+        <input type="text" name="name" placeholder="Название товара" required autofocus>
+        <button type="submit" class="btn">Добавить</button>
+    </form>
+</section>
+{% endblock %} -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>➕ Добавить товар в магазин</h1>
+    <a href="/shop" class="btn">← Назад в магазин</a>
+</section>
+
+<section class="add-form-container">
+    <form action="/shop/add" method="post" class="add-form">
+        <div class="form-group">
+            <label for="name">📦 Название товара:</label>
+            <input type="text" id="name" name="name" placeholder="Например: Волшебная палочка" required autofocus>
+        </div>
+        
+        <div class="form-group">
+            <label for="price">💰 Цена (в монетах):</label>
+            <input type="number" id="price" name="price" placeholder="100" required min="1">
+        </div>
+        
+        <button type="submit" class="btn-submit">➕ Добавить товар</button>
+    </form>
+</section>
+
+<style>
+    .add-form-container {
+        max-width: 500px;
+        margin: 30px auto;
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 16px;
+    }
+    
+    input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
