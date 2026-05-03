@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+<!-- {% extends "base.html" %}
 
 {% block content %}
 <h2>Редактировать студента</h2>
@@ -9,7 +9,19 @@
 </form>
 <br>
 <a href="/students">← Назад к списку</a>
-{% endblock %} 
+{% endblock %}  -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>✏️ Редактировать студента</h2>
+<form method="post" action="/students/edit/{{ student.id }}">
+    <label>Имя: <input type="text" name="name" value="{{ student.name }}" required></label><br>
+    <label>Класс: <input type="text" name="class_name" value="{{ student['class'] }}"></label><br>
+    <button type="submit">Обновить</button>
+</form>
+<a href="/students">Назад</a>
+{% endblock %}
 
 
 

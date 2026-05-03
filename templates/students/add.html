@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+<!-- {% extends "base.html" %}
 
 {% block content %}
 <h1>➕ Добавить студента</h1>
@@ -14,4 +14,18 @@
     <button type="submit">Сохранить</button>
     <a href="/students">Отмена</a>
 </form>
+{% endblock %} -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>➕ Добавить студента</h1>
+<form method="post" action="/students/add">
+    <label>Имя: <input type="text" name="name" required></label><br>
+    <label>Класс: <input type="text" name="class_name"></label><br>
+    <label>Монеты: <input type="number" name="coins" value="0"></label><br>
+    <label>Данные: <textarea name="data"></textarea></label><br>
+    <button type="submit">Сохранить</button>
+</form>
+<a href="/students">Назад</a>
 {% endblock %}
