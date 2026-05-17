@@ -3,15 +3,30 @@
 {% block content %}
 <h2>⚙️ Админ-панель</h2>
 
+<!-- ===== СОЗДАНИЕ УЧИТЕЛЯ ===== -->
 <h3>👨‍🏫 Создать учителя</h3>
-<form method="post" action="/admin/create-teacher">
+<form method="post" action="/admin/create-teacher" style="margin-bottom: 30px;">
     <input type="text" name="teacher_name" placeholder="Имя учителя" required>
     <input type="text" name="class_name" placeholder="Класс (например, 10А)" required>
     <input type="text" name="username" placeholder="Логин" required>
     <input type="password" name="password" placeholder="Пароль" required>
-    <button type="submit">Создать</button>
+    <button type="submit">Создать учителя</button>
 </form>
 
+<!-- ===== СОЗДАНИЕ УЧЕНИКА ===== -->
+<h3>👨‍🎓 Создать ученика</h3>
+<form method="post" action="/admin/create-student" style="margin-bottom: 30px;">
+    <input type="text" name="student_name" placeholder="Имя ученика" required>
+    <input type="text" name="class_name" placeholder="Класс (например, 10А)" required>
+    <input type="text" name="username" placeholder="Логин" required>
+    <input type="password" name="password" placeholder="Пароль" required>
+    <input type="number" name="coins" placeholder="Монеты" value="0">
+    <button type="submit">Создать ученика</button>
+</form>
+
+<hr>
+
+<!-- ===== СПИСОК УЧИТЕЛЕЙ ===== -->
 <h3>📋 Список учителей</h3>
 <table>
     <thead>
@@ -38,7 +53,36 @@
     </tbody>
 </table>
 
-<h3>👥 Все пользователи</h3>
+<!-- ===== СПИСОК УЧЕНИКОВ ===== -->
+<h3>📋 Список учеников</h3>
+<table>
+    <thead>
+        <tr><th>ID</th><th>Имя</th><th>Класс</th><th>Монеты</th><th>Логин</th><th>Действия</th></tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student['class'] }}</td>
+            <td>{{ student.coins }}</td>
+            <td>
+                {% for user in users %}
+                    {% if user.student_id == student.id %}
+                        {{ user.username }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                <button class="delete-student-btn" data-id="{{ student.id }}">🗑️</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ===== ВСЕ ПОЛЬЗОВАТЕЛИ ===== -->
+<h3>👥 Все пользователи системы</h3>
 <table>
     <thead>
         <tr><th>ID</th><th>Логин</th><th>Роль</th><th>Действия</th></tr>
@@ -66,6 +110,17 @@ document.querySelectorAll('.delete-teacher-btn').forEach(btn => {
         let id = btn.dataset.id;
         if (!confirm('Удалить учителя и его аккаунт?')) return;
         let res = await fetch(`/admin/delete-teacher/${id}`, { method: 'DELETE' });
+        if (res.ok) location.reload();
+        else alert('Ошибка');
+    };
+});
+
+// Удаление ученика
+document.querySelectorAll('.delete-student-btn').forEach(btn => {
+    btn.onclick = async () => {
+        let id = btn.dataset.id;
+        if (!confirm('Удалить ученика и его аккаунт?')) return;
+        let res = await fetch(`/admin/delete-student/${id}`, { method: 'DELETE' });
         if (res.ok) location.reload();
         else alert('Ошибка');
     };
