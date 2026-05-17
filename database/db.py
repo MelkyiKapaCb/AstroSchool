@@ -1,4 +1,5 @@
 import sqlite3
+import hashlib
 
 DB_PATH = "database.db"
 
@@ -38,15 +39,100 @@ def init_db():
             name TEXT NOT NULL,
             price INTEGER DEFAULT 0
         );
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT NOT NULL CHECK(role IN ('admin', 'teacher', 'student')),
+            teacher_id INTEGER,
+            student_id INTEGER,
+            FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+            FOREIGN KEY (student_id) REFERENCES students(id)
+        );
         """
     )
+    # Добавляем колонку price если её нет
     cols = [row[1] for row in conn.execute("PRAGMA table_info(items)").fetchall()]
     if "price" not in cols:
         conn.execute("ALTER TABLE items ADD COLUMN price INTEGER DEFAULT 0")
+    
+    # Создаём админа по умолчанию (если нет)
+    admin = conn.execute(
+        "SELECT * FROM users WHERE username = 'admin'"
+    ).fetchone()
+    if not admin:
+        hashed_password = hashlib.sha256("admin123".encode()).hexdigest()
+        conn.execute(
+            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+            ("admin", hashed_password, "admin"),
+        )
+    
     conn.commit()
     conn.close()
 
 
+def create_user(username, password, role, teacher_id=None, student_id=None):
+    conn = get_connection()
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    conn.execute(
+        "INSERT INTO users (username, password, role, teacher_id, student_id) VALUES (?, ?, ?, ?, ?)",
+        (username, hashed_password, role, teacher_id, student_id),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_user(username):
+    conn = get_connection()
+    user = conn.execute(
+        "SELECT * FROM users WHERE username = ?", (username,)
+    ).fetchone()
+    conn.close()
+    return user
+
+
+def verify_user(username, password):
+    user = get_user(username)
+    if user:
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        if user["password"] == hashed_password:
+            return dict(user)
+    return None
+
+
+def get_all_users():
+    conn = get_connection()
+    users = conn.execute("SELECT * FROM users").fetchall()
+    conn.close()
+    return users
+
+
+def delete_user(user_id):
+    conn = get_connection()
+    conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+
+
+def get_teacher_by_id(teacher_id):
+    conn = get_connection()
+    teacher = conn.execute(
+        "SELECT * FROM teachers WHERE id = ?", (teacher_id,)
+    ).fetchone()
+    conn.close()
+    return teacher
+
+
+def get_students_by_class(class_name):
+    conn = get_connection()
+    students = conn.execute(
+        "SELECT * FROM students WHERE class = ?", (class_name,)
+    ).fetchall()
+    conn.close()
+    return students
+
+
+# Старые функции оставляем без изменений
 def create_student(name, class_name):
     conn = get_connection()
     conn.execute(

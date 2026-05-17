@@ -2,7 +2,10 @@
 
 {% block content %}
 <h1>Список студентов</h1>
+
+{% if request.session.get('user') and request.session.user.role != 'student' %}
 <a href="/students/add">➕ Добавить</a>
+{% endif %}
 
 <table border="1">
     <thead>
@@ -16,8 +19,10 @@
             <td>{{ student['class'] }}</td>
             <td>
                 <a href="/student/{{ student.id }}">Профиль</a>
+                {% if request.session.get('user') and request.session.user.role != 'student' %}
                 <a href="/students/edit/{{ student.id }}">✏️</a>
                 <button class="delete-btn" data-id="{{ student.id }}">🗑️</button>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

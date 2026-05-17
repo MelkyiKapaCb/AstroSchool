@@ -10,13 +10,40 @@
         th { background-color: #f2f2f2; }
         a, button { margin-right: 10px; }
         button:hover { opacity: 0.8; }
+        .user-info { 
+            background: #f0f0f0; 
+            padding: 10px; 
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
+    <div class="user-info">
+        <span>
+            {% if request.session.get('user') %}
+                👤 {{ request.session.user.username }} ({{ request.session.user.role }})
+            {% endif %}
+        </span>
+        <span>
+            {% if request.session.get('user') %}
+                <a href="/logout">🚪 Выйти</a>
+            {% endif %}
+        </span>
+    </div>
+    
     <h1>📚 Школьная система</h1>
     <hr>
     {% block content %}{% endblock %}
     <hr>
-    <a href="/students">На главную</a>
+    {% if request.session.get('user') %}
+        {% if request.session.user.role == 'admin' %}
+            <a href="/admin">⚙️ Админ-панель</a>
+        {% elif request.session.user.role == 'teacher' %}
+            <a href="/teacher/students">👨‍🏫 Мои ученики</a>
+        {% endif %}
+        <a href="/students">📋 Все студенты</a>
+    {% endif %}
 </body>
 </html>

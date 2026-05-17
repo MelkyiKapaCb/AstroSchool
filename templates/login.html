@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>🔐 Вход в систему</h2>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form method="post" action="/login">
+    <div>
+        <label>Логин:</label><br>
+        <input type="text" name="username" required>
+    </div>
+    <div style="margin-top: 10px;">
+        <label>Пароль:</label><br>
+        <input type="password" name="password" required>
+    </div>
+    <div style="margin-top: 15px;">
+        <button type="submit">Войти</button>
+    </div>
+</form>
+
+<p style="margin-top: 20px; color: #666;">
+    👨‍💼 Админ по умолчанию: admin / admin123
+</p>
+{% endblock %}
