@@ -1,38 +1,66 @@
-<!-- Замените блок с товаром на этот -->
-{% for item in items %}
-<div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
-    <h3>{{ item.name }}</h3>
-    <p style="font-size: 24px; color: #ff9800; font-weight: bold; margin: 15px 0;">💰 {{ item.price }} монет</p>
-    
-    {% if student %}
-    <div style="display: flex; gap: 10px;">
-        <form action="/shop/buy/{{ item.id }}" method="post" style="flex: 1;">
-            <input type="hidden" name="student_id" value="{{ student.id }}">
-            <input type="hidden" name="item_price" value="{{ item.price }}">
-            <button type="submit" class="btn" {% if student.coins < item.price %}disabled style="background: #ccc;"{% endif %}>
-                ✅ Купить сразу
-            </button>
-        </form>
-        
-        <form action="/cart/add/{{ item.id }}" method="post" style="flex: 1;">
-            <input type="hidden" name="student_id" value="{{ student.id }}">
-            <button type="submit" class="btn" style="background: #ff9800;">
-                🛒 В корзину
-            </button>
-        </form>
-    </div>
-    {% else %}
-    <p style="color: #666; margin-bottom: 10px;">🔐 Войдите, чтобы покупать</p>
-    <a href="/login" class="btn" style="background: #28a745;">Войти</a>
-    {% endif %}
-</div>
-{% endfor %}
+{% extends "base.html" %}
 
-<!-- Добавьте ссылку на корзину вверху -->
-{% if student %}
-<div style="text-align: right; margin-bottom: 20px;">
-    <a href="/cart?student_id={{ student.id }}" class="btn" style="background: #ff9800;">
-        🛒 Корзина
-    </a>
+{% block content %}
+<style>
+    .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+    .item-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+    .item-price { font-size: 24px; color: #ff9800; font-weight: bold; margin: 15px 0; }
+    .btn { display: inline-block; padding: 8px 16px; border-radius: 8px; text-decoration: none; color: white; border: none; cursor: pointer; }
+    .btn-buy { background: #28a745; }
+    .btn-cart { background: #ff9800; }
+    .btn-cart-link { background: #ff9800; }
+    .btn-add { background: #667eea; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .item-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .alert-error { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+</style>
+
+<div class="shop-header">
+    <h1>🛒 Магазин</h1>
+    <div>
+        {% if student %}
+        <span>💰 Баланс: {{ student.coins }} монет</span>
+        <a href="/cart?student_id={{ student.id }}" class="btn btn-cart-link">🛒 Корзина</a>
+        {% endif %}
+        {% if request.session.get('user') and request.session.user.role in ['admin', 'teacher'] %}
+        <a href="/shop/add" class="btn btn-add">➕ Добавить товар</a>
+        {% endif %}
+    </div>
 </div>
+
+{% if request.query_params.get('error') %}
+<div class="alert-error">❌ {{ request.query_params.get('error') }}</div>
 {% endif %}
+
+{% if items %}
+<div class="items-grid">
+    {% for item in items %}
+    <div class="item-card">
+        <h3>{{ item.name }}</h3>
+        <p class="item-price">💰 {{ item.price }} монет</p>
+
+        {% if student %}
+        <div class="item-actions">
+            <form action="/shop/buy/{{ item.id }}" method="post">
+                <input type="hidden" name="student_id" value="{{ student.id }}">
+                <button type="submit" class="btn btn-buy" {% if student.coins < item.price %}disabled{% endif %}>
+                    ✅ Купить
+                </button>
+            </form>
+            <form action="/cart/add/{{ item.id }}" method="post">
+                <input type="hidden" name="student_id" value="{{ student.id }}">
+                <button type="submit" class="btn btn-cart">🛒 В корзину</button>
+            </form>
+        </div>
+        {% else %}
+        <p style="color: #666;">🔐 Войдите как ученик, чтобы покупать</p>
+        <a href="/login" class="btn btn-buy">Войти</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>Магазин пока пуст. {% if request.session.get('user') and request.session.user.role in ['admin', 'teacher'] %}<a href="/shop/add">Добавить первый товар</a>{% endif %}</p>
+{% endif %}
+{% endblock %}

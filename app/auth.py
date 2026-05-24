@@ -203,15 +203,15 @@ async def teacher_students(request: Request):
         return RedirectResponse("/login", status_code=303)
     
     teacher_id = user.get("teacher_id")
-    teacher = get_connection().execute(
+    conn = get_connection()
+    teacher = conn.execute(
         "SELECT * FROM teachers WHERE id = ?", (teacher_id,)
     ).fetchone()
-    
+
     if not teacher:
+        conn.close()
         return HTMLResponse("Учитель не найден", status_code=404)
-    
-    # Получаем студентов с информацией о логинах
-    conn = get_connection()
+
     students = conn.execute(
         """
         SELECT s.*, u.username, u.id as user_id
@@ -244,22 +244,22 @@ async def teacher_add_student(
         return RedirectResponse("/login", status_code=303)
     
     teacher_id = user.get("teacher_id")
-    teacher = get_connection().execute(
+    conn = get_connection()
+    teacher = conn.execute(
         "SELECT * FROM teachers WHERE id = ?", (teacher_id,)
     ).fetchone()
-    
+
     if teacher:
-        # Создаём студента
-        student_id = add_student_with_login(name, teacher["class"], coins, data)
-        
-        # Создаём пользователя для студента
+        class_name = teacher["class"]
+        conn.close()
+        student_id = add_student_with_login(name, class_name, coins, data)
         create_user(username, password, "student", student_id=student_id)
+    else:
+        conn.close()
     
     return RedirectResponse("/teacher/students", status_code=303)
 
 
-<<<<<<< HEAD
-=======
 # Учитель добавляет логин существующему ученику
 @router.post("/teacher/add-student-login/{student_id}")
 async def teacher_add_student_login(
@@ -271,16 +271,14 @@ async def teacher_add_student_login(
     user = request.session.get("user")
     if not user or user.get("role") != "teacher":
         return RedirectResponse("/login", status_code=303)
-    
-    # Проверяем что у студента ещё нет логина
+
     conn = get_connection()
     existing_user = conn.execute(
         "SELECT * FROM users WHERE student_id = ?", (student_id,)
     ).fetchone()
-    
+
     if not existing_user:
         create_user(username, password, "student", student_id=student_id)
-    
+
     conn.close()
     return RedirectResponse("/teacher/students", status_code=303)
->>>>>>> bcb7556c573edbcd4b1c8669e971598c43df2acb

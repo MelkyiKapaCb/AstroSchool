@@ -70,7 +70,9 @@ async def add_to_cart(
     student_id: int = Form(...)
 ):
     user = request.session.get("user")
-    
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+
     # Проверяем права
     if user.get("role") == "student":
         if user.get("student_id") != student_id:
@@ -90,7 +92,9 @@ async def remove_from_cart(
     student_id: int = Form(...)
 ):
     user = request.session.get("user")
-    
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+
     if user.get("role") == "student" and user.get("student_id") != student_id:
         return RedirectResponse("/shop?error=unauthorized", status_code=303)
     
@@ -106,7 +110,9 @@ async def clear_cart_route(
     student_id: int = Form(...)
 ):
     user = request.session.get("user")
-    
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+
     if user.get("role") == "student" and user.get("student_id") != student_id:
         return RedirectResponse("/shop?error=unauthorized", status_code=303)
     
@@ -119,7 +125,9 @@ async def checkout(
     student_id: int = Form(...)
 ):
     user = request.session.get("user")
-    
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+
     # Проверяем права
     if user.get("role") == "student":
         if user.get("student_id") != student_id:

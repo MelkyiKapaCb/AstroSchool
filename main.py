@@ -8,6 +8,8 @@ from database.db import init_db
 from app.routes.students import router as students_router
 from app.routes.student import router as student_router
 from app.routes.shop import router as shop_router
+from app.routes.cart import router as cart_router
+from app.balance import router as balance_router
 from app.auth import router as auth_router
 
 app = FastAPI()
@@ -19,6 +21,8 @@ app.include_router(auth_router)
 app.include_router(students_router)
 app.include_router(student_router)
 app.include_router(shop_router)
+app.include_router(cart_router)
+app.include_router(balance_router)
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
