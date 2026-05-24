@@ -37,9 +37,11 @@ def startup():
 async def root(request: Request):
     user = request.session.get("user")
     if not user:
-        return RedirectResponse("/login")
+        return RedirectResponse("/login", status_code=303)
     if user["role"] == "admin":
-        return RedirectResponse("/admin")
+        return RedirectResponse("/admin", status_code=303)
     elif user["role"] == "teacher":
-        return RedirectResponse("/teacher/students")
-    return RedirectResponse("/students")
+        return RedirectResponse("/teacher/students", status_code=303)
+    elif user["role"] == "student" and user.get("student_id"):
+        return RedirectResponse(f"/student/{user['student_id']}", status_code=303)
+    return RedirectResponse("/login", status_code=303)

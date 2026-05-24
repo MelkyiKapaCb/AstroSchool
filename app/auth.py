@@ -13,6 +13,8 @@ from database.db import (
     add_student_with_login,
     delete_student,
     get_connection,
+    get_teacher_by_id,
+    get_student_by_id,
 )
 from functools import wraps
 
@@ -38,7 +40,22 @@ def login_required(role=None):
 # Страница входа
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    error = request.session.pop("login_error", None) or request.query_params.get("error")
+    return templates.TemplateResponse("login.html", {"request": request, "error": error})
+
+
+def _validate_user_account(user: dict) -> str | None:
+    """Проверяет, что у пользователя есть связанная запись в БД."""
+    role = user.get("role")
+    if role == "teacher":
+        teacher_id = user.get("teacher_id")
+        if not teacher_id or not get_teacher_by_id(teacher_id):
+            return "Аккаунт учителя настроен неверно. Обратитесь к администратору."
+    elif role == "student":
+        student_id = user.get("student_id")
+        if not student_id or not get_student_by_id(student_id):
+            return "Аккаунт ученика настроен неверно. Обратитесь к администратору."
+    return None
 
 
 @router.post("/login")
@@ -53,7 +70,14 @@ async def login(
             "login.html",
             {"request": request, "error": "Неверный логин или пароль"},
         )
-    
+
+    account_error = _validate_user_account(user)
+    if account_error:
+        return templates.TemplateResponse(
+            "login.html",
+            {"request": request, "error": account_error},
+        )
+
     request.session["user"] = user
     
     # Перенаправляем в зависимости от роли
@@ -203,6 +227,13 @@ async def teacher_students(request: Request):
         return RedirectResponse("/login", status_code=303)
     
     teacher_id = user.get("teacher_id")
+    if not teacher_id:
+        request.session.clear()
+        request.session["login_error"] = (
+            "Аккаунт учителя настроен неверно. Обратитесь к администратору."
+        )
+        return RedirectResponse("/login", status_code=303)
+
     conn = get_connection()
     teacher = conn.execute(
         "SELECT * FROM teachers WHERE id = ?", (teacher_id,)
@@ -210,7 +241,11 @@ async def teacher_students(request: Request):
 
     if not teacher:
         conn.close()
-        return HTMLResponse("Учитель не найден", status_code=404)
+        request.session.clear()
+        request.session["login_error"] = (
+            "Профиль учителя не найден. Войдите снова или обратитесь к администратору."
+        )
+        return RedirectResponse("/login", status_code=303)
 
     students = conn.execute(
         """
