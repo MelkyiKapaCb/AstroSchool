@@ -190,3 +190,5 @@ async def teacher_add_student(
         conn.close()
     
     return RedirectResponse("/teacher/students", status_code=303)
+
+

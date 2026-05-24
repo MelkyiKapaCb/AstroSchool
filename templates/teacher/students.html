@@ -1,50 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>👨‍🏫 {{ teacher.name }} - класс {{ teacher['class'] }}</h2>
+<h2>👨‍🏫 Мои ученики</h2>
 
-<h3>➕ Добавить ученика</h3>
-<form method="post" action="/teacher/add-student">
+<form method="post" action="/teacher/add-student" style="margin-bottom: 30px;">
     <input type="text" name="name" placeholder="Имя ученика" required>
-    <input type="number" name="coins" placeholder="Монеты" value="0">
-    <input type="text" name="data" placeholder="Доп. данные">
-    <button type="submit">Добавить</button>
+    <input type="number" name="coins" placeholder="Начальные монеты" value="0">
+    <button type="submit">➕ Добавить ученика</button>
 </form>
 
-<h3>📋 Список учеников</h3>
-{% if students %}
+<h3>📋 Список учеников класса {{ teacher.class }}</h3>
 <table>
     <thead>
-        <tr><th>ID</th><th>Имя</th><th>Монеты</th><th>Класс</th><th>Действия</th></tr>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Монеты</th>
+            <th>Действия</th>
+        </tr>
     </thead>
     <tbody>
         {% for student in students %}
         <tr>
             <td>{{ student.id }}</td>
             <td>{{ student.name }}</td>
-            <td>{{ student.coins }}</td>
-            <td>{{ student['class'] }}</td>
+            <td>💰 {{ student.coins }}</td>
             <td>
-                <a href="/student/{{ student.id }}">👁️ Профиль</a>
-                <button class="delete-btn" data-id="{{ student.id }}">🗑️</button>
+                <a href="/teacher/balance/{{ student.id }}" class="btn">💰 Управление балансом</a>
+                <a href="/cart?student_id={{ student.id }}" class="btn">🛒 Корзина</a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-{% else %}
-    <p>Учеников пока нет</p>
-{% endif %}
-
-<script>
-document.querySelectorAll('.delete-btn').forEach(btn => {
-    btn.onclick = async () => {
-        let id = btn.dataset.id;
-        if (!confirm('Удалить ученика?')) return;
-        let res = await fetch(`/students/delete/${id}`, { method: 'DELETE' });
-        if (res.ok) location.reload();
-        else alert('Ошибка');
-    };
-});
-</script>
 {% endblock %}

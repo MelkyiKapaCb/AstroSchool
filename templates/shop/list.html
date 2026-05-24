@@ -1,23 +1,38 @@
-{% extends 'base.html' %}
+<!-- Замените блок с товаром на этот -->
+{% for item in items %}
+<div style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+    <h3>{{ item.name }}</h3>
+    <p style="font-size: 24px; color: #ff9800; font-weight: bold; margin: 15px 0;">💰 {{ item.price }} монет</p>
+    
+    {% if student %}
+    <div style="display: flex; gap: 10px;">
+        <form action="/shop/buy/{{ item.id }}" method="post" style="flex: 1;">
+            <input type="hidden" name="student_id" value="{{ student.id }}">
+            <input type="hidden" name="item_price" value="{{ item.price }}">
+            <button type="submit" class="btn" {% if student.coins < item.price %}disabled style="background: #ccc;"{% endif %}>
+                ✅ Купить сразу
+            </button>
+        </form>
+        
+        <form action="/cart/add/{{ item.id }}" method="post" style="flex: 1;">
+            <input type="hidden" name="student_id" value="{{ student.id }}">
+            <button type="submit" class="btn" style="background: #ff9800;">
+                🛒 В корзину
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <p style="color: #666; margin-bottom: 10px;">🔐 Войдите, чтобы покупать</p>
+    <a href="/login" class="btn" style="background: #28a745;">Войти</a>
+    {% endif %}
+</div>
+{% endfor %}
 
-{% block content %}
-<section class="page-header">
-    <h1>Магазин</h1>
-    <a href="/shop/add" class="btn">+ Добавить товар</a>
-</section>
-
-{# Форма добавления товара #}
-<section class="add-form">
-    <form action="/shop/add" method="post">
-        <input type="text" name="name" placeholder="Название товара" required>
-        <button type="submit" class="btn">Добавить</button>
-    </form>
-</section>
-
-{# Список товаров #}
-<section class="items-grid">
-    {% for item in items %}
-        {% include "shop/card.html" %}
-    {% endfor %}
-</section>
-{% endblock %}
+<!-- Добавьте ссылку на корзину вверху -->
+{% if student %}
+<div style="text-align: right; margin-bottom: 20px;">
+    <a href="/cart?student_id={{ student.id }}" class="btn" style="background: #ff9800;">
+        🛒 Корзина
+    </a>
+</div>
+{% endif %}
