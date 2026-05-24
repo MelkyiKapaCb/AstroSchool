@@ -3,6 +3,7 @@
 {% block content %}
 <h2>👨‍🏫 Мои ученики</h2>
 
+<<<<<<< HEAD
 <form method="post" action="/teacher/add-student" style="margin-bottom: 30px;">
     <input type="text" name="name" placeholder="Имя ученика" required>
     <input type="number" name="coins" placeholder="Начальные монеты" value="0">
@@ -10,12 +11,33 @@
 </form>
 
 <h3>📋 Список учеников класса {{ teacher.class }}</h3>
+=======
+<!-- ===== ДОБАВЛЕНИЕ УЧЕНИКА С ЛОГИНОМ ===== -->
+<h3>➕ Добавить ученика с логином</h3>
+<form method="post" action="/teacher/add-student" style="margin-bottom: 30px; background: #f9f9f9; padding: 15px;">
+    <input type="text" name="name" placeholder="Имя ученика" required>
+    <input type="number" name="coins" placeholder="Монеты" value="0">
+    <input type="text" name="data" placeholder="Доп. данные">
+    <input type="text" name="username" placeholder="Логин" required>
+    <input type="password" name="password" placeholder="Пароль" required>
+    <button type="submit">Добавить ученика</button>
+</form>
+
+<!-- ===== СПИСОК УЧЕНИКОВ ===== -->
+<h3>📋 Список учеников</h3>
+{% if students %}
+>>>>>>> bcb7556c573edbcd4b1c8669e971598c43df2acb
 <table>
     <thead>
         <tr>
             <th>ID</th>
             <th>Имя</th>
             <th>Монеты</th>
+<<<<<<< HEAD
+=======
+            <th>Класс</th>
+            <th>Логин</th>
+>>>>>>> bcb7556c573edbcd4b1c8669e971598c43df2acb
             <th>Действия</th>
         </tr>
     </thead>
@@ -26,8 +48,25 @@
             <td>{{ student.name }}</td>
             <td>💰 {{ student.coins }}</td>
             <td>
+<<<<<<< HEAD
                 <a href="/teacher/balance/{{ student.id }}" class="btn">💰 Управление балансом</a>
                 <a href="/cart?student_id={{ student.id }}" class="btn">🛒 Корзина</a>
+=======
+                {% if student.username %}
+                    ✅ {{ student.username }}
+                {% else %}
+                    <!-- Форма для добавления логина существующему ученику -->
+                    <form method="post" action="/teacher/add-student-login/{{ student.id }}" style="display: inline;">
+                        <input type="text" name="username" placeholder="Логин" required size="10">
+                        <input type="password" name="password" placeholder="Пароль" required size="10">
+                        <button type="submit">🔑</button>
+                    </form>
+                {% endif %}
+            </td>
+            <td>
+                <a href="/student/{{ student.id }}">👁️</a>
+                <button class="delete-btn" data-id="{{ student.id }}">🗑️</button>
+>>>>>>> bcb7556c573edbcd4b1c8669e971598c43df2acb
             </td>
         </tr>
         {% endfor %}

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Form, Depends, HTTPException
-from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from database.db import (
     verify_user,
@@ -9,6 +9,9 @@ from database.db import (
     get_all_teachers,
     create_teacher,
     delete_teachers,
+    get_all_students,
+    add_student_with_login,
+    delete_student,
     get_connection,
 )
 from functools import wraps
@@ -58,6 +61,8 @@ async def login(
         return RedirectResponse("/admin", status_code=303)
     elif user["role"] == "teacher":
         return RedirectResponse("/teacher/students", status_code=303)
+    elif user["role"] == "student":
+        return RedirectResponse("/student/" + str(user["student_id"]), status_code=303)
     else:
         return RedirectResponse("/students", status_code=303)
 
@@ -68,7 +73,8 @@ async def logout(request: Request):
     return RedirectResponse("/login", status_code=303)
 
 
-# Админ-панель
+# ===================== АДМИН-ПАНЕЛЬ =====================
+
 @router.get("/admin", response_class=HTMLResponse)
 async def admin_panel(request: Request):
     user = request.session.get("user")
@@ -76,14 +82,21 @@ async def admin_panel(request: Request):
         return RedirectResponse("/login", status_code=303)
     
     teachers = get_all_teachers()
+    students = get_all_students()
     users = get_all_users()
     
     return templates.TemplateResponse(
         "admin/panel.html",
-        {"request": request, "teachers": teachers, "users": users},
+        {
+            "request": request,
+            "teachers": teachers,
+            "students": students,
+            "users": users
+        },
     )
 
 
+# Создание учителя
 @router.post("/admin/create-teacher")
 async def create_teacher_account(
     request: Request,
@@ -112,6 +125,30 @@ async def create_teacher_account(
     return RedirectResponse("/admin", status_code=303)
 
 
+# Создание ученика
+@router.post("/admin/create-student")
+async def create_student_account(
+    request: Request,
+    student_name: str = Form(...),
+    class_name: str = Form(...),
+    username: str = Form(...),
+    password: str = Form(...),
+    coins: int = Form(0),
+):
+    user = request.session.get("user")
+    if not user or user.get("role") != "admin":
+        return RedirectResponse("/login", status_code=303)
+    
+    # Создаём студента
+    student_id = add_student_with_login(student_name, class_name, coins)
+    
+    # Создаём пользователя для студента
+    create_user(username, password, "student", student_id=student_id)
+    
+    return RedirectResponse("/admin", status_code=303)
+
+
+# Удаление учителя
 @router.delete("/admin/delete-teacher/{teacher_id}")
 async def delete_teacher_account(teacher_id: int, request: Request):
     user = request.session.get("user")
@@ -128,6 +165,24 @@ async def delete_teacher_account(teacher_id: int, request: Request):
     return JSONResponse({"message": "OK"})
 
 
+# Удаление ученика
+@router.delete("/admin/delete-student/{student_id}")
+async def delete_student_account(student_id: int, request: Request):
+    user = request.session.get("user")
+    if not user or user.get("role") != "admin":
+        return JSONResponse({"error": "Доступ запрещён"}, status_code=403)
+    
+    # Удаляем пользователя связанного со студентом
+    conn = get_connection()
+    conn.execute("DELETE FROM users WHERE student_id = ?", (student_id,))
+    conn.execute("DELETE FROM students WHERE id = ?", (student_id,))
+    conn.commit()
+    conn.close()
+    
+    return JSONResponse({"message": "OK"})
+
+
+# Удаление пользователя
 @router.delete("/admin/delete-user/{user_id}")
 async def delete_user_account(user_id: int, request: Request):
     user = request.session.get("user")
@@ -137,6 +192,8 @@ async def delete_user_account(user_id: int, request: Request):
     delete_user(user_id)
     return JSONResponse({"message": "OK"})
 
+
+# ===================== УЧИТЕЛЬ =====================
 
 # Учитель видит своих учеников
 @router.get("/teacher/students", response_class=HTMLResponse)
@@ -153,9 +210,18 @@ async def teacher_students(request: Request):
     if not teacher:
         return HTMLResponse("Учитель не найден", status_code=404)
     
-    students = get_connection().execute(
-        "SELECT * FROM students WHERE class = ?", (teacher["class"],)
+    # Получаем студентов с информацией о логинах
+    conn = get_connection()
+    students = conn.execute(
+        """
+        SELECT s.*, u.username, u.id as user_id
+        FROM students s
+        LEFT JOIN users u ON u.student_id = s.id
+        WHERE s.class = ?
+        """,
+        (teacher["class"],)
     ).fetchall()
+    conn.close()
     
     return templates.TemplateResponse(
         "teacher/students.html",
@@ -163,13 +229,15 @@ async def teacher_students(request: Request):
     )
 
 
-# Учитель добавляет ученика
+# Учитель добавляет ученика с логином и паролем
 @router.post("/teacher/add-student")
 async def teacher_add_student(
     request: Request,
     name: str = Form(...),
     coins: int = Form(0),
     data: str = Form(""),
+    username: str = Form(...),
+    password: str = Form(...),
 ):
     user = request.session.get("user")
     if not user or user.get("role") != "teacher":
@@ -181,14 +249,38 @@ async def teacher_add_student(
     ).fetchone()
     
     if teacher:
-        conn = get_connection()
-        conn.execute(
-            "INSERT INTO students (name, coins, class, data) VALUES (?, ?, ?, ?)",
-            (name, coins, teacher["class"], data),
-        )
-        conn.commit()
-        conn.close()
+        # Создаём студента
+        student_id = add_student_with_login(name, teacher["class"], coins, data)
+        
+        # Создаём пользователя для студента
+        create_user(username, password, "student", student_id=student_id)
     
     return RedirectResponse("/teacher/students", status_code=303)
 
 
+<<<<<<< HEAD
+=======
+# Учитель добавляет логин существующему ученику
+@router.post("/teacher/add-student-login/{student_id}")
+async def teacher_add_student_login(
+    student_id: int,
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+):
+    user = request.session.get("user")
+    if not user or user.get("role") != "teacher":
+        return RedirectResponse("/login", status_code=303)
+    
+    # Проверяем что у студента ещё нет логина
+    conn = get_connection()
+    existing_user = conn.execute(
+        "SELECT * FROM users WHERE student_id = ?", (student_id,)
+    ).fetchone()
+    
+    if not existing_user:
+        create_user(username, password, "student", student_id=student_id)
+    
+    conn.close()
+    return RedirectResponse("/teacher/students", status_code=303)
+>>>>>>> bcb7556c573edbcd4b1c8669e971598c43df2acb

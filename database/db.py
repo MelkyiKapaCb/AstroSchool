@@ -255,3 +255,15 @@ def get_transactions_by_student(student_id: int, limit: int = 50):
     ).fetchall()
     conn.close()
     return [dict(row) for row in rows]
+
+def add_student_with_login(name: str, class_name: str, coins: int = 0, data: str = ""):
+    """Создаёт студента и возвращает его ID"""
+    conn = get_connection()
+    cursor = conn.execute(
+        "INSERT INTO students (name, coins, class, data) VALUES (?, ?, ?, ?)",
+        (name, coins, class_name, data),
+    )
+    student_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return student_id
